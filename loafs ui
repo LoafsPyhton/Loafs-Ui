@@ -1,0 +1,78 @@
+-- ModuleScript: CustomUILibrary
+
+local CustomUILibrary = {}
+
+function CustomUILibrary.createUI(parent)
+    local frame = Instance.new("Frame")
+    frame.Size = UDim2.new(0, 400, 0, 600)
+    frame.Position = UDim2.new(0.5, -200, 0.5, -300)
+    frame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+    frame.Parent = parent
+
+    local tabs = Instance.new("Frame")
+    tabs.Size = UDim2.new(1, 0, 0, 50)
+    tabs.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+    tabs.Parent = frame
+
+    local tabButtons = {}
+    local tabContents = {}
+
+    function CustomUILibrary.createTabButton(tabName, position)
+        local tabButton = Instance.new("TextButton")
+        tabButton.Text = tabName
+        tabButton.Size = UDim2.new(0, 100, 1, 0)
+        tabButton.Position = UDim2.new(0, position * 100, 0, 0)
+        tabButton.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
+        tabButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+        tabButton.Parent = tabs
+        table.insert(tabButtons, tabButton)
+        return tabButton
+    end
+
+    function CustomUILibrary.createSection(tabIndex, sectionName)
+        local section = Instance.new("Frame")
+        section.Size = UDim2.new(1, 0, 1, -50)
+        section.Position = UDim2.new(0, 0, 0, 50)
+        section.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
+        section.Visible = false
+        section.Parent = frame
+
+        local label = Instance.new("TextLabel")
+        label.Text = sectionName
+        label.Size = UDim2.new(1, 0, 0, 50)
+        label.BackgroundColor3 = Color3.fromRGB(120, 120, 120)
+        label.TextColor3 = Color3.fromRGB(255, 255, 255)
+        label.Parent = section
+
+        table.insert(tabContents, section)
+    end
+
+    function CustomUILibrary.createButton(section, buttonText, callback)
+        local button = Instance.new("TextButton")
+        button.Text = buttonText
+        button.Size = UDim2.new(0, 100, 0, 40)
+        button.Position = UDim2.new(0, 10, 0, #section:GetChildren() * 50 + 60)
+        button.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
+        button.TextColor3 = Color3.fromRGB(255, 255, 255)
+        button.Parent = section
+
+        button.MouseButton1Click:Connect(callback)
+    end
+
+    function CustomUILibrary.switchTab(tabIndex)
+        for i, section in ipairs(tabContents) do
+            section.Visible = (i == tabIndex)
+        end
+    end
+
+    return {
+        tabs = tabs,
+        frame = frame,
+        createTabButton = CustomUILibrary.createTabButton,
+        createSection = CustomUILibrary.createSection,
+        createButton = CustomUILibrary.createButton,
+        switchTab = CustomUILibrary.switchTab
+    }
+end
+
+return CustomUILibrary

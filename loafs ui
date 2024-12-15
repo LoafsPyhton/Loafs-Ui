@@ -2,41 +2,45 @@
 
 local CustomUILibrary = {}
 
--- Function to create the UI window
-function CustomUILibrary.MakeWindow(options)
-    -- Create the main frame (the "window")
+-- Create the window function
+function CustomUILibrary.CreateWindow(options)
+    local playerGui = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+    
+    -- Create the window frame
     local window = Instance.new("Frame")
-    window.Size = UDim2.new(0, 400, 0, 300)
-    window.Position = UDim2.new(0.5, -200, 0.5, -150)
-    window.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+    window.Size = UDim2.new(0, 500, 0, 400)
+    window.Position = UDim2.new(0.5, -250, 0.5, -200)
+    window.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
     window.Active = true
     window.Draggable = true
-    window.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
-
-    -- Add a title for the window
+    window.Visible = false  -- Hide initially for intro animation
+    window.Parent = playerGui
+    
+    -- Add title to the window
     local title = Instance.new("TextLabel")
     title.Text = options.Name or "Window"
-    title.Size = UDim2.new(1, 0, 0, 50)
+    title.Size = UDim2.new(1, 0, 0, 40)
     title.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
     title.TextColor3 = Color3.fromRGB(255, 255, 255)
+    title.TextSize = 18
     title.Parent = window
-
-    -- Close Button at the top-right corner
+    
+    -- Create close button
     local closeButton = Instance.new("TextButton")
     closeButton.Text = "X"
     closeButton.Size = UDim2.new(0, 30, 0, 30)
-    closeButton.Position = UDim2.new(1, -30, 0, 0)
+    closeButton.Position = UDim2.new(1, -40, 0, 5)
     closeButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
     closeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
     closeButton.Parent = window
     closeButton.MouseButton1Click:Connect(function()
-        window.Visible = false
+        window:Destroy()  -- Close the window
         if options.CloseCallback then
             options.CloseCallback()
         end
     end)
-
-    -- Intro animation
+    
+    -- Intro text display if enabled
     if options.IntroEnabled then
         local introText = Instance.new("TextLabel")
         introText.Text = options.IntroText or "Welcome!"
@@ -44,9 +48,9 @@ function CustomUILibrary.MakeWindow(options)
         introText.Position = UDim2.new(0, 0, 0.5, -25)
         introText.TextColor3 = Color3.fromRGB(255, 255, 255)
         introText.BackgroundTransparency = 1
-        introText.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+        introText.Parent = playerGui
         
-        -- Animate intro text letter by letter
+        -- Animate the intro text
         local function animateIntroText(text)
             local i = 1
             while i <= #text do
@@ -58,107 +62,75 @@ function CustomUILibrary.MakeWindow(options)
 
         animateIntroText(options.IntroText or "Welcome to Eclipse UI")
 
-        wait(5)  -- Display the intro for 5 seconds
+        wait(5)  -- Show intro text for 5 seconds
         introText:Destroy()
+        window.Visible = true  -- Show the window after intro
+    else
         window.Visible = true
     end
 
-    -- Return the window object for further manipulation
     return window
 end
 
--- Function to create a Tab inside the window
-function CustomUILibrary.MakeTab(options, window)
+-- Create tab function
+function CustomUILibrary.CreateTab(options, window)
     local tab = Instance.new("Frame")
-    tab.Size = UDim2.new(1, 0, 1, -50)
+    tab.Size = UDim2.new(0.25, 0, 1, -50)  -- Left column tab
     tab.Position = UDim2.new(0, 0, 0, 50)
-    tab.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+    tab.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
     tab.Parent = window
-
-    -- Add an icon and name to the tab
+    
+    -- Add tab name
     local tabName = Instance.new("TextLabel")
     tabName.Text = options.Name
-    tabName.Size = UDim2.new(0, 200, 0, 50)
-    tabName.Position = UDim2.new(0, 10, 0, 10)
+    tabName.Size = UDim2.new(1, 0, 0, 50)
+    tabName.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
     tabName.TextColor3 = Color3.fromRGB(255, 255, 255)
-    tabName.BackgroundTransparency = 1
+    tabName.TextSize = 18
     tabName.Parent = tab
-
-    -- Add a button to the tab
-    local tabButton = Instance.new("TextButton")
-    tabButton.Text = options.Name
-    tabButton.Size = UDim2.new(0, 200, 0, 40)
-    tabButton.Position = UDim2.new(0, 10, 0, 70)
-    tabButton.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
-    tabButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-    tabButton.Parent = tab
-
-    -- If no icon is provided, set a random icon
-    local icon = options.Icon or "rbxassetid://4483345998" -- Default icon
-    local iconImage = Instance.new("ImageLabel")
-    iconImage.Image = icon
-    iconImage.Size = UDim2.new(0, 20, 0, 20)
-    iconImage.Position = UDim2.new(0, 5, 0, 5)
-    iconImage.Parent = tabButton
-
-    -- Call the button callback when clicked
-    tabButton.MouseButton1Click:Connect(function()
-        if options.Callback then
-            options.Callback()
-        end
-    end)
-
-    -- Return the tab object for further manipulation
-    return tab
-end
-
--- Function to create a Toggle button inside the tab
-function CustomUILibrary.AddToggle(options, tab)
-    local toggleButton = Instance.new("TextButton")
-    toggleButton.Text = options.Name
-    toggleButton.Size = UDim2.new(0, 200, 0, 40)
-    toggleButton.Position = UDim2.new(0, 10, 0, 120)
-    toggleButton.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
-    toggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-    toggleButton.Parent = tab
-
-    -- If the toggle is set to true by default, change its background
-    if options.Default then
-        toggleButton.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
+    
+    -- Add the tab icon if provided
+    if options.Icon then
+        local icon = Instance.new("ImageLabel")
+        icon.Image = options.Icon
+        icon.Size = UDim2.new(0, 30, 0, 30)
+        icon.Position = UDim2.new(0, 10, 0, 10)
+        icon.Parent = tab
     end
 
-    -- Toggle the state when clicked
+    -- Create a button inside the tab
+    local tabButton = Instance.new("TextButton")
+    tabButton.Text = "Sample Button"
+    tabButton.Size = UDim2.new(1, -20, 0, 40)
+    tabButton.Position = UDim2.new(0, 10, 0, 100)
+    tabButton.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
+    tabButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+    tabButton.TextSize = 16
+    tabButton.Parent = tab
+    tabButton.MouseButton1Click:Connect(function()
+        print("Button clicked!")
+        if options.ButtonCallback then
+            options.ButtonCallback()
+        end
+    end)
+
+    -- Create a toggle button inside the tab
+    local toggleButton = Instance.new("TextButton")
+    toggleButton.Text = "Enable Feature"
+    toggleButton.Size = UDim2.new(1, -20, 0, 40)
+    toggleButton.Position = UDim2.new(0, 10, 0, 150)
+    toggleButton.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
+    toggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+    toggleButton.TextSize = 16
+    toggleButton.Parent = tab
     toggleButton.MouseButton1Click:Connect(function()
-        options.Default = not options.Default
-        toggleButton.BackgroundColor3 = options.Default and Color3.fromRGB(0, 255, 0) or Color3.fromRGB(255, 0, 0)
-        if options.Callback then
-            options.Callback(options.Default)
+        print("Toggle button clicked!")
+        if options.ToggleCallback then
+            options.ToggleCallback()
         end
     end)
 
-    -- Return the toggle object for further manipulation
-    return toggleButton
-end
-
--- Function to create a Button inside the tab
-function CustomUILibrary.AddButton(options, tab)
-    local button = Instance.new("TextButton")
-    button.Text = options.Name
-    button.Size = UDim2.new(0, 200, 0, 40)
-    button.Position = UDim2.new(0, 10, 0, 160)
-    button.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
-    button.TextColor3 = Color3.fromRGB(255, 255, 255)
-    button.Parent = tab
-
-    -- Call the button callback when clicked
-    button.MouseButton1Click:Connect(function()
-        if options.Callback then
-            options.Callback()
-        end
-    end)
-
-    -- Return the button object for further manipulation
-    return button
+    return tab
 end
 
 return CustomUILibrary

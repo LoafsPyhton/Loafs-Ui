@@ -54,7 +54,7 @@ function Loafs:MakeWindow(properties)
     window.AnchorPoint = Vector2.new(0.5, 0.5)
     window.Parent = screenGui
 
-    -- Make the frame draggable
+    -- Dragging Logic
     local dragging = false
     local dragStart
     local startPos
@@ -92,7 +92,6 @@ function Loafs:MakeWindow(properties)
     titleBar.BorderSizePixel = 0
     titleBar.Parent = window
 
-    -- Window Title
     local titleLabel = Instance.new("TextLabel")
     titleLabel.Text = properties.Name or "Loafs Window"
     titleLabel.Size = UDim2.new(1, -30, 1, 0)
@@ -140,10 +139,9 @@ function Loafs:MakeWindow(properties)
     contentFrame.BorderSizePixel = 0
     contentFrame.Parent = window
 
-    -- Store tabs
     local tabs = {}
 
-    -- Function to add a tab
+    -- Function to create a tab
     function window:MakeTab(tabProperties)
         local tabButton = Instance.new("TextButton")
         tabButton.Text = tabProperties.Name or "Tab"
@@ -155,7 +153,6 @@ function Loafs:MakeWindow(properties)
         tabButton.TextSize = 16
         tabButton.Parent = tabsContainer
 
-        -- Tab Content
         local tabContent = Instance.new("Frame")
         tabContent.Name = tabProperties.Name or "TabContent"
         tabContent.Size = UDim2.new(1, 0, 1, 0)
@@ -168,7 +165,6 @@ function Loafs:MakeWindow(properties)
             Content = tabContent
         }
 
-        -- Tab Button Click
         tabButton.MouseButton1Click:Connect(function()
             for _, otherTab in pairs(tabs) do
                 otherTab.Content.Visible = false
@@ -176,7 +172,6 @@ function Loafs:MakeWindow(properties)
             tabContent.Visible = true
         end)
 
-        -- Function to add a button
         function tab:AddButton(buttonProperties)
             local button = Instance.new("TextButton")
             button.Text = buttonProperties.Name or "Button"
@@ -188,21 +183,17 @@ function Loafs:MakeWindow(properties)
             button.TextSize = 16
             button.Parent = tabContent
 
-            -- Button Callback
             button.MouseButton1Click:Connect(function()
                 if buttonProperties.Callback then
                     buttonProperties.Callback()
                 end
             end)
-
-            table.insert(Loafs.Elements, button)
         end
 
         table.insert(tabs, tab)
         return tab
     end
 
-    Loafs.Elements.Window = window
     return window
 end
 

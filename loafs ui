@@ -8,7 +8,7 @@ function Loafs:MakeWindow(properties)
     screenGui.Name = "LoafsUI"
     screenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
 
-    -- Main Frame
+    -- Main Frame (Window)
     local window = Instance.new("Frame")
     window.Name = properties.Name or "Window"
     window.Size = UDim2.new(0, 600, 0, 400)
@@ -17,6 +17,37 @@ function Loafs:MakeWindow(properties)
     window.BorderSizePixel = 0
     window.AnchorPoint = Vector2.new(0.5, 0.5)
     window.Parent = screenGui
+
+    -- Make the frame draggable
+    local dragging = false
+    local dragStart
+    local startPos
+
+    window.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            dragging = true
+            dragStart = input.Position
+            startPos = window.Position
+        end
+    end)
+
+    window.InputChanged:Connect(function(input)
+        if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+            local delta = input.Position - dragStart
+            window.Position = UDim2.new(
+                startPos.X.Scale,
+                startPos.X.Offset + delta.X,
+                startPos.Y.Scale,
+                startPos.Y.Offset + delta.Y
+            )
+        end
+    end)
+
+    window.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            dragging = false
+        end
+    end)
 
     -- Title Bar
     local titleBar = Instance.new("Frame")

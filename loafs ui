@@ -1,136 +1,143 @@
--- Custom UILibrary Module
+local Loafs = {}
+Loafs.Elements = {} -- Store all UI elements
 
-local CustomUILibrary = {}
+-- Create a Window
+function Loafs:MakeWindow(properties)
+    -- ScreenGui
+    local screenGui = Instance.new("ScreenGui")
+    screenGui.Name = "LoafsUI"
+    screenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
 
--- Create the window function
-function CustomUILibrary.CreateWindow(options)
-    local playerGui = game.Players.LocalPlayer:WaitForChild("PlayerGui")
-    
-    -- Create the window frame
+    -- Main Frame
     local window = Instance.new("Frame")
-    window.Size = UDim2.new(0, 500, 0, 400)
-    window.Position = UDim2.new(0.5, -250, 0.5, -200)
+    window.Name = properties.Name or "Window"
+    window.Size = UDim2.new(0, 600, 0, 400)
+    window.Position = UDim2.new(0.5, -300, 0.5, -200)
     window.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-    window.Active = true
-    window.Draggable = true
-    window.Visible = false  -- Hide initially for intro animation
-    window.Parent = playerGui
-    
-    -- Add title to the window
-    local title = Instance.new("TextLabel")
-    title.Text = options.Name or "Window"
-    title.Size = UDim2.new(1, 0, 0, 40)
-    title.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-    title.TextColor3 = Color3.fromRGB(255, 255, 255)
-    title.TextSize = 18
-    title.Parent = window
-    
-    -- Create close button
+    window.BorderSizePixel = 0
+    window.AnchorPoint = Vector2.new(0.5, 0.5)
+    window.Parent = screenGui
+
+    -- Title Bar
+    local titleBar = Instance.new("Frame")
+    titleBar.Size = UDim2.new(1, 0, 0, 30)
+    titleBar.BackgroundColor3 = Color3.fromRGB(70, 70, 70)
+    titleBar.BorderSizePixel = 0
+    titleBar.Parent = window
+
+    -- Window Title
+    local titleLabel = Instance.new("TextLabel")
+    titleLabel.Text = properties.Name or "Loafs Window"
+    titleLabel.Size = UDim2.new(1, -30, 1, 0)
+    titleLabel.Position = UDim2.new(0, 10, 0, 0)
+    titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    titleLabel.BackgroundTransparency = 1
+    titleLabel.Font = Enum.Font.SourceSansBold
+    titleLabel.TextSize = 18
+    titleLabel.TextXAlignment = Enum.TextXAlignment.Left
+    titleLabel.Parent = titleBar
+
+    -- Close Button
     local closeButton = Instance.new("TextButton")
     closeButton.Text = "X"
-    closeButton.Size = UDim2.new(0, 30, 0, 30)
-    closeButton.Position = UDim2.new(1, -40, 0, 5)
-    closeButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+    closeButton.Size = UDim2.new(0, 30, 1, 0)
+    closeButton.Position = UDim2.new(1, -30, 0, 0)
     closeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-    closeButton.Parent = window
+    closeButton.BackgroundColor3 = Color3.fromRGB(150, 0, 0)
+    closeButton.BorderSizePixel = 0
+    closeButton.Font = Enum.Font.SourceSansBold
+    closeButton.TextSize = 18
+    closeButton.Parent = titleBar
     closeButton.MouseButton1Click:Connect(function()
-        window:Destroy()  -- Close the window
-        if options.CloseCallback then
-            options.CloseCallback()
+        if properties.CloseCallback then
+            properties.CloseCallback()
         end
+        screenGui:Destroy()
     end)
-    
-    -- Intro text display if enabled
-    if options.IntroEnabled then
-        local introText = Instance.new("TextLabel")
-        introText.Text = options.IntroText or "Welcome!"
-        introText.Size = UDim2.new(1, 0, 0, 50)
-        introText.Position = UDim2.new(0, 0, 0.5, -25)
-        introText.TextColor3 = Color3.fromRGB(255, 255, 255)
-        introText.BackgroundTransparency = 1
-        introText.Parent = playerGui
-        
-        -- Animate the intro text
-        local function animateIntroText(text)
-            local i = 1
-            while i <= #text do
-                introText.Text = text:sub(1, i)
-                i = i + 1
-                wait(0.05)
+
+    -- Tabs Container (Left)
+    local tabsContainer = Instance.new("Frame")
+    tabsContainer.Name = "TabsContainer"
+    tabsContainer.Size = UDim2.new(0, 150, 1, -30)
+    tabsContainer.Position = UDim2.new(0, 0, 0, 30)
+    tabsContainer.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+    tabsContainer.BorderSizePixel = 0
+    tabsContainer.Parent = window
+
+    -- Tab Content Frame (Right)
+    local contentFrame = Instance.new("Frame")
+    contentFrame.Name = "ContentFrame"
+    contentFrame.Size = UDim2.new(1, -150, 1, -30)
+    contentFrame.Position = UDim2.new(0, 150, 0, 30)
+    contentFrame.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+    contentFrame.BorderSizePixel = 0
+    contentFrame.Parent = window
+
+    -- Store tabs
+    local tabs = {}
+
+    -- Function to add a tab
+    function window:MakeTab(tabProperties)
+        local tabButton = Instance.new("TextButton")
+        tabButton.Text = tabProperties.Name or "Tab"
+        tabButton.Size = UDim2.new(1, 0, 0, 30)
+        tabButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+        tabButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+        tabButton.BorderSizePixel = 0
+        tabButton.Font = Enum.Font.SourceSans
+        tabButton.TextSize = 16
+        tabButton.Parent = tabsContainer
+
+        -- Tab Content
+        local tabContent = Instance.new("Frame")
+        tabContent.Name = tabProperties.Name or "TabContent"
+        tabContent.Size = UDim2.new(1, 0, 1, 0)
+        tabContent.BackgroundTransparency = 1
+        tabContent.Visible = false
+        tabContent.Parent = contentFrame
+
+        local tab = {
+            Name = tabProperties.Name,
+            Content = tabContent
+        }
+
+        -- Tab Button Click
+        tabButton.MouseButton1Click:Connect(function()
+            for _, otherTab in pairs(tabs) do
+                otherTab.Content.Visible = false
             end
+            tabContent.Visible = true
+        end)
+
+        -- Function to add a button
+        function tab:AddButton(buttonProperties)
+            local button = Instance.new("TextButton")
+            button.Text = buttonProperties.Name or "Button"
+            button.Size = UDim2.new(0, 120, 0, 40)
+            button.Position = UDim2.new(0, 10, 0, #tabContent:GetChildren() * 50)
+            button.BackgroundColor3 = Color3.fromRGB(80, 80, 200)
+            button.TextColor3 = Color3.fromRGB(255, 255, 255)
+            button.Font = Enum.Font.SourceSans
+            button.TextSize = 16
+            button.Parent = tabContent
+
+            -- Button Callback
+            button.MouseButton1Click:Connect(function()
+                if buttonProperties.Callback then
+                    buttonProperties.Callback()
+                end
+            end)
+
+            table.insert(Loafs.Elements, button)
         end
 
-        animateIntroText(options.IntroText or "Welcome to Eclipse UI")
-
-        wait(5)  -- Show intro text for 5 seconds
-        introText:Destroy()
-        window.Visible = true  -- Show the window after intro
-    else
-        window.Visible = true
+        table.insert(tabs, tab)
+        return tab
     end
 
+    -- Store the window in Loafs
+    Loafs.Elements.Window = window
     return window
 end
 
--- Create tab function
-function CustomUILibrary.CreateTab(options, window)
-    local tab = Instance.new("Frame")
-    tab.Size = UDim2.new(0.25, 0, 1, -50)  -- Left column tab
-    tab.Position = UDim2.new(0, 0, 0, 50)
-    tab.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
-    tab.Parent = window
-    
-    -- Add tab name
-    local tabName = Instance.new("TextLabel")
-    tabName.Text = options.Name
-    tabName.Size = UDim2.new(1, 0, 0, 50)
-    tabName.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-    tabName.TextColor3 = Color3.fromRGB(255, 255, 255)
-    tabName.TextSize = 18
-    tabName.Parent = tab
-    
-    -- Add the tab icon if provided
-    if options.Icon then
-        local icon = Instance.new("ImageLabel")
-        icon.Image = options.Icon
-        icon.Size = UDim2.new(0, 30, 0, 30)
-        icon.Position = UDim2.new(0, 10, 0, 10)
-        icon.Parent = tab
-    end
-
-    -- Create a button inside the tab
-    local tabButton = Instance.new("TextButton")
-    tabButton.Text = "Sample Button"
-    tabButton.Size = UDim2.new(1, -20, 0, 40)
-    tabButton.Position = UDim2.new(0, 10, 0, 100)
-    tabButton.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
-    tabButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-    tabButton.TextSize = 16
-    tabButton.Parent = tab
-    tabButton.MouseButton1Click:Connect(function()
-        print("Button clicked!")
-        if options.ButtonCallback then
-            options.ButtonCallback()
-        end
-    end)
-
-    -- Create a toggle button inside the tab
-    local toggleButton = Instance.new("TextButton")
-    toggleButton.Text = "Enable Feature"
-    toggleButton.Size = UDim2.new(1, -20, 0, 40)
-    toggleButton.Position = UDim2.new(0, 10, 0, 150)
-    toggleButton.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
-    toggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-    toggleButton.TextSize = 16
-    toggleButton.Parent = tab
-    toggleButton.MouseButton1Click:Connect(function()
-        print("Toggle button clicked!")
-        if options.ToggleCallback then
-            options.ToggleCallback()
-        end
-    end)
-
-    return tab
-end
-
-return CustomUILibrary
+return Loafs

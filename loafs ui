@@ -1,8 +1,44 @@
 local Loafs = {}
-Loafs.Elements = {} -- Store all UI elements
+Loafs.Elements = {}
+
+-- Define themes
+local themes = {
+    Rose = {
+        BackgroundColor = Color3.fromRGB(255, 228, 235),
+        TabColor = Color3.fromRGB(255, 182, 193),
+        ButtonColor = Color3.fromRGB(255, 105, 180),
+        TextColor = Color3.fromRGB(50, 50, 50),
+    },
+    Red = {
+        BackgroundColor = Color3.fromRGB(255, 220, 220),
+        TabColor = Color3.fromRGB(255, 99, 99),
+        ButtonColor = Color3.fromRGB(255, 50, 50),
+        TextColor = Color3.fromRGB(255, 255, 255),
+    },
+    Green = {
+        BackgroundColor = Color3.fromRGB(220, 255, 220),
+        TabColor = Color3.fromRGB(99, 255, 99),
+        ButtonColor = Color3.fromRGB(50, 205, 50),
+        TextColor = Color3.fromRGB(50, 50, 50),
+    },
+    Blue = {
+        BackgroundColor = Color3.fromRGB(220, 230, 255),
+        TabColor = Color3.fromRGB(99, 150, 255),
+        ButtonColor = Color3.fromRGB(50, 100, 255),
+        TextColor = Color3.fromRGB(255, 255, 255),
+    },
+    Purple = {
+        BackgroundColor = Color3.fromRGB(240, 230, 255),
+        TabColor = Color3.fromRGB(180, 120, 255),
+        ButtonColor = Color3.fromRGB(128, 0, 128),
+        TextColor = Color3.fromRGB(255, 255, 255),
+    }
+}
 
 -- Create a Window
 function Loafs:MakeWindow(properties)
+    local selectedTheme = themes[properties.theme] or themes.Blue -- Default to Blue theme if not specified
+
     -- ScreenGui
     local screenGui = Instance.new("ScreenGui")
     screenGui.Name = "LoafsUI"
@@ -13,7 +49,7 @@ function Loafs:MakeWindow(properties)
     window.Name = properties.Name or "Window"
     window.Size = UDim2.new(0, 600, 0, 400)
     window.Position = UDim2.new(0.5, -300, 0.5, -200)
-    window.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+    window.BackgroundColor3 = selectedTheme.BackgroundColor
     window.BorderSizePixel = 0
     window.AnchorPoint = Vector2.new(0.5, 0.5)
     window.Parent = screenGui
@@ -52,7 +88,7 @@ function Loafs:MakeWindow(properties)
     -- Title Bar
     local titleBar = Instance.new("Frame")
     titleBar.Size = UDim2.new(1, 0, 0, 30)
-    titleBar.BackgroundColor3 = Color3.fromRGB(70, 70, 70)
+    titleBar.BackgroundColor3 = selectedTheme.TabColor
     titleBar.BorderSizePixel = 0
     titleBar.Parent = window
 
@@ -61,7 +97,7 @@ function Loafs:MakeWindow(properties)
     titleLabel.Text = properties.Name or "Loafs Window"
     titleLabel.Size = UDim2.new(1, -30, 1, 0)
     titleLabel.Position = UDim2.new(0, 10, 0, 0)
-    titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    titleLabel.TextColor3 = selectedTheme.TextColor
     titleLabel.BackgroundTransparency = 1
     titleLabel.Font = Enum.Font.SourceSansBold
     titleLabel.TextSize = 18
@@ -73,7 +109,7 @@ function Loafs:MakeWindow(properties)
     closeButton.Text = "X"
     closeButton.Size = UDim2.new(0, 30, 1, 0)
     closeButton.Position = UDim2.new(1, -30, 0, 0)
-    closeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+    closeButton.TextColor3 = selectedTheme.TextColor
     closeButton.BackgroundColor3 = Color3.fromRGB(150, 0, 0)
     closeButton.BorderSizePixel = 0
     closeButton.Font = Enum.Font.SourceSansBold
@@ -91,7 +127,7 @@ function Loafs:MakeWindow(properties)
     tabsContainer.Name = "TabsContainer"
     tabsContainer.Size = UDim2.new(0, 150, 1, -30)
     tabsContainer.Position = UDim2.new(0, 0, 0, 30)
-    tabsContainer.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+    tabsContainer.BackgroundColor3 = selectedTheme.TabColor
     tabsContainer.BorderSizePixel = 0
     tabsContainer.Parent = window
 
@@ -100,7 +136,7 @@ function Loafs:MakeWindow(properties)
     contentFrame.Name = "ContentFrame"
     contentFrame.Size = UDim2.new(1, -150, 1, -30)
     contentFrame.Position = UDim2.new(0, 150, 0, 30)
-    contentFrame.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+    contentFrame.BackgroundColor3 = selectedTheme.BackgroundColor
     contentFrame.BorderSizePixel = 0
     contentFrame.Parent = window
 
@@ -112,8 +148,8 @@ function Loafs:MakeWindow(properties)
         local tabButton = Instance.new("TextButton")
         tabButton.Text = tabProperties.Name or "Tab"
         tabButton.Size = UDim2.new(1, 0, 0, 30)
-        tabButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-        tabButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+        tabButton.BackgroundColor3 = selectedTheme.TabColor
+        tabButton.TextColor3 = selectedTheme.TextColor
         tabButton.BorderSizePixel = 0
         tabButton.Font = Enum.Font.SourceSans
         tabButton.TextSize = 16
@@ -146,8 +182,8 @@ function Loafs:MakeWindow(properties)
             button.Text = buttonProperties.Name or "Button"
             button.Size = UDim2.new(0, 120, 0, 40)
             button.Position = UDim2.new(0, 10, 0, #tabContent:GetChildren() * 50)
-            button.BackgroundColor3 = Color3.fromRGB(80, 80, 200)
-            button.TextColor3 = Color3.fromRGB(255, 255, 255)
+            button.BackgroundColor3 = selectedTheme.ButtonColor
+            button.TextColor3 = selectedTheme.TextColor
             button.Font = Enum.Font.SourceSans
             button.TextSize = 16
             button.Parent = tabContent
@@ -166,7 +202,6 @@ function Loafs:MakeWindow(properties)
         return tab
     end
 
-    -- Store the window in Loafs
     Loafs.Elements.Window = window
     return window
 end

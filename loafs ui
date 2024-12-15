@@ -1,3 +1,5 @@
+-- Custom UILibrary Module
+
 local CustomUILibrary = {}
 
 -- Function to create the UI window

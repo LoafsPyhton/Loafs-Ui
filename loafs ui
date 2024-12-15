@@ -145,13 +145,16 @@ function Loafs:MakeWindow(properties)
     function window:MakeTab(tabProperties)
         local tabButton = Instance.new("TextButton")
         tabButton.Text = tabProperties.Name or "Tab"
-        tabButton.Size = UDim2.new(1, 0, 0, 30)
+        tabButton.Size = UDim2.new(1, 0, 0, 40) -- Larger buttons
         tabButton.BackgroundColor3 = selectedTheme.TabColor
         tabButton.TextColor3 = selectedTheme.TextColor
         tabButton.BorderSizePixel = 0
-        tabButton.Font = Enum.Font.SourceSans
-        tabButton.TextSize = 16
+        tabButton.Font = Enum.Font.SourceSansBold -- Bold text
+        tabButton.TextSize = 20 -- Larger text
         tabButton.Parent = tabsContainer
+
+        -- Position tabs dynamically
+        tabButton.Position = UDim2.new(0, 0, 0, #tabs * 40)
 
         local tabContent = Instance.new("Frame")
         tabContent.Name = tabProperties.Name or "TabContent"
@@ -179,7 +182,7 @@ function Loafs:MakeWindow(properties)
             button.Position = UDim2.new(0, 10, 0, #tabContent:GetChildren() * 50)
             button.BackgroundColor3 = selectedTheme.ButtonColor
             button.TextColor3 = selectedTheme.TextColor
-            button.Font = Enum.Font.SourceSans
+            button.Font = Enum.Font.SourceSansBold
             button.TextSize = 16
             button.Parent = tabContent
 
